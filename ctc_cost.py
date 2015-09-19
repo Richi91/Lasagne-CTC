@@ -157,8 +157,8 @@ def sequence_log_likelihood(y, y_hat, y_mask, y_hat_mask, blank_symbol):
     Based on code from Shawn Tan.
     Credits to Kyle Kastner as well.
     """
-    y_hat_mask_len = tensor.sum(y_hat_mask, axis=0, dtype='int32')
-    y_mask_len = tensor.sum(y_mask, axis=0, dtype='int32')
+    y_hat_mask_len = tensor.sum(y_hat_mask, axis=0).astype('int32')
+    y_mask_len = tensor.sum(y_mask, axis=0).astype('int32')
     log_probabs = _log_path_probabs(
         y, T.log(y_hat), y_mask, y_hat_mask, blank_symbol)
     batch_size = log_probabs.shape[1]
@@ -358,9 +358,9 @@ def _log_path_probabs(y, log_y_hat, y_mask, y_hat_mask, blank_symbol,
         y_mask = y_mask[::-1]
         # going backwards, the first non-zero alpha value should be the
         # first non-masked label.
-        start_positions = T.cast(n_labels - y_mask.sum(0), 'int64')
+        start_positions = T.cast(n_labels - y_mask.sum(0), 'int32')
     else:
-        start_positions = T.zeros((batch_size,), dtype='int64')
+        start_positions = T.zeros((batch_size,), dtype='int32')
 
     log_pred_y = _class_batch_to_labeling_batch(y, log_y_hat, y_hat_mask)
     log_pred_y = log_pred_y.dimshuffle(0, 2, 1)
